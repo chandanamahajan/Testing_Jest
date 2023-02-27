@@ -13,7 +13,30 @@ const user = {
 // intercept the useAuth0 function and mock it
 jest.mock("@auth0/auth0-react");
 
-describe("components/App - logged in", () => {
+describe("components/App - before logged in", () => {
+  beforeEach(() => {
+    // Mock the Auth0 hook and make it return a logged out state (if a user is not logged in)
+    useAuth0.mockReturnValue({
+      isAuthenticated: false,
+      logout: jest.fn(),
+      loginWithRedirect: jest.fn(),
+    });
+  });
+
+  test("Renders with required props", async () => {
+    const view = render(<App />);
+    expect(view).toBeTruthy();
+  });
+  test("Renders with Login button before mocking useAuth0", async () => {
+    const view = render(<App />);
+    expect(view).toBeTruthy();
+
+    const loginBtn = screen.getByText(/Log in/i);
+    expect(loginBtn).toBeInTheDocument();
+  });
+});
+
+describe("components/App - after logged in", () => {
   beforeEach(() => {
     // Mock the Auth0 hook and make it return a logged in state
     useAuth0.mockReturnValue({
@@ -24,12 +47,12 @@ describe("components/App - logged in", () => {
     });
   });
 
-  it("Renders with required props", async () => {
+  test("Renders with required props", async () => {
     const view = render(<App />);
     expect(view).toBeTruthy();
   });
 
-  it("Renders with user details", async () => {
+  test("Renders with user details", async () => {
     const view = render(<App />);
     expect(view).toBeTruthy();
 
